@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>controls</name>
+  <name>AICK</name>
   <version>0.0.0</version>
   <description>The autonomous quadcopter package</description>
 
