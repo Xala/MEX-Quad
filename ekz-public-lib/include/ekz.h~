@@ -1,0 +1,22 @@
+#ifndef ekz_H_
+#define ekz_H_
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <vector>
+#include <pthread.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <errno.h>
+
+#include "/home/quad/quad/src/quadcopter/ekz-public-lib/include/core/FrameInput.h"
+#include "/home/quad/quad/src/quadcopter/ekz-public-lib/include/core/core.h"
+#include "/home/quad/quad/src/quadcopter/ekz-public-lib/include/FeatureExtractor/FeatureExtractor.h"
+#include "/home/quad/quad/src/quadcopter/ekz-public-lib/include/RGBDSegmentation/RGBDSegmentation.h"
+#include "/home/quad/quad/src/quadcopter/ekz-public-lib/include/Map/Map3D.h"
+
+#endif
