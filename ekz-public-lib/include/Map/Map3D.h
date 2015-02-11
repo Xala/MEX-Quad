@@ -63,6 +63,7 @@ class Map3D
 	
 	vector<Transformation *> transformations;
 	vector<Matrix4f> poses;
+	vector<Matrix4f> newPose;
 	
 	Map3D();
 	virtual ~Map3D(); 
@@ -79,6 +80,7 @@ class Map3D
 	virtual void addTransformation(Transformation * transformation);
 
 	virtual vector<Matrix4f> estimate();
+	virtual vector<Matrix4f> estimateCurrentPose(vector<Matrix4f> lastPose);
 
 	virtual void setVerbose(bool v);
 	virtual void setCalibration(Calibration * cal);

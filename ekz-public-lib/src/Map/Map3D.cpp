@@ -91,10 +91,29 @@ vector<Matrix4f> Map3D::estimate(){
 	for(unsigned int i = 0; i < transformations.size(); i++){
 		if(verbose){printf("Frame:%i ---------> %i : %f\n",transformations.at(i)->src->id,transformations.at(i)->dst->id,transformations.at(i)->weight);}
 		//cout << transformations.at(i)->transformationMatrix << endl;
+		
 		poses.push_back(poses.back()*transformations.at(i)->transformationMatrix);
+		
 	}
 	return poses;
+
 }
+
+vector<Matrix4f> Map3D::estimateCurrentPose(vector<Matrix4f> lastPose)
+{
+	sort(transformations.begin(),transformations.end(),comparison_Map3D);
+	newPose = lastPose;
+	matcher->debugg = true;
+	int i = transformations.size()-1;
+	if(verbose){printf("Frame:%i ---------> %i : %f\n",transformations.at(i)->src->id,transformations.at(i)->dst->id,transformations.at(i)->weight);}
+	//cout << transformations.at(i)->transformationMatrix << endl;
+	newPose.insert(newPose.begin(),newPose.back()*transformations.at(i)->transformationMatrix);
+	newPose.pop_back();
+	
+
+	return newPose;
+}
+
 void Map3D::savePCD(string path){savePCD(path,false, false, 0.01);}
 void Map3D::savePCD(string path,bool randomcolor, bool trajectory, float resolution){
 	if(verbose){printf("Saving map in: %s\n",path.c_str());}
