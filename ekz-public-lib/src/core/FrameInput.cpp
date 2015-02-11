@@ -62,7 +62,7 @@ FrameInput::FrameInput(Calibration * cal, string rgbpath, string depthpath){
 	load_rgb();
 	load_depth();
 
-
+	
 	if(false && rgb_img!=0 && depth_img != 0){
 		cvNamedWindow("input rgb", CV_WINDOW_AUTOSIZE );
 		IplImage * img 					= cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 3);
