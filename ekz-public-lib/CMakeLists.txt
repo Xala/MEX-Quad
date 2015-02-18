@@ -3,7 +3,7 @@ project(ekz_public_lib)
 
 set(CMAKE_CXX_FLAGS "-O4 -g -pg -Wunknown-pragmas -Wno-unknown-pragmas -Wsign-compare ${CMAKE_CXX_FLAGS}")
 
-find_package(catkin REQUIRED COMPONENTS rosbag cv_bridge roscpp rospy std_msgs pcl_ros sensor_msgs)
+find_package(catkin REQUIRED COMPONENTS rosbag cv_bridge roscpp rospy std_msgs pcl_ros sensor_msgs geometry_msgs)
 
 ##############################################
 ##################### INCLUDES ###############

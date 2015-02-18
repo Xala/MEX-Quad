@@ -2,7 +2,9 @@
 #include "std_msgs/String.h"
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl_ros/point_cloud.h>
-
+#include <tf/transform_broadcaster.h>
+#include <tf/transform_listener.h>
+#include <math.h>
 // PCL specific includes
 #include <pcl/conversions.h>
 #include <pcl/point_cloud.h>
@@ -10,6 +12,7 @@
 #include <pcl_conversions/pcl_conversions.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/point_cloud_conversion.h>
+#include <geometry_msgs/PoseStamped.h>
 
 
 //Opencv
@@ -30,12 +33,14 @@ class AICKNode
 private:
     ros::NodeHandle n;
     ros::Publisher pub_Pose;
+    ros::Publisher pub_Pose_test;
     ros::Subscriber sub_Points;
     int count;
 	int counter;
 	Map3D * m;
-	vector<Matrix4f> lastPose;
-
+	vector<Matrix4f> lastRotationMatrix;
+	tf::StampedTransform tf_camera_link_to_local_origin;
+	tf::TransformListener tfl;
     public:
     AICKNode()
         : n("~")
@@ -59,18 +64,19 @@ private:
     void init()
     {
         sub_Points = n.subscribe("/camera/depth_registered/points", 1, &AICKNode::pointsCallback, this);
-        pub_Pose = n.advertise<sensor_msgs::PointCloud2> ("/preProcessed/test", 1);
+        pub_Pose = n.advertise<geometry_msgs::PoseStamped> ("/mavros/position/vision", 1);
+        pub_Pose_test = n.advertise<geometry_msgs::PoseStamped> ("/test", 1);
         count = 0;
         counter = 0;
         firstTime = true;
         m = new Map3D();
-        lastPose.push_back(Matrix4f::Identity());
+        lastRotationMatrix.push_back(Matrix4f::Identity());
 
     }
 
     void pointsCallback(const sensor_msgs::PointCloud2ConstPtr& input)
     {
-        if (count >= 6)
+        if (count >= 0)
         {
             counter++;
 
@@ -108,10 +114,43 @@ private:
 
 				//Add frame to map
 				m->addFrame(input_cloud_ptr);
-				vector<Matrix4f> pose = m->estimateCurrentPose(lastPose);
-				cout << pose.front() << endl << endl;
-				lastPose = pose;
-				pub_Pose.publish(input);
+				vector<Matrix4f> rotationMatrix = m->estimateCurrentPose(lastRotationMatrix);
+				cout << rotationMatrix.front() << endl << endl;
+				lastRotationMatrix = rotationMatrix;
+				//Convert rotation matrix to quaternion
+				double q4 = 0.5 * sqrt(1 + rotationMatrix.front()(0,0) + rotationMatrix.front()(1,1) + rotationMatrix.front()(2,2));
+				double q1 = (1/(4*q4))*(rotationMatrix.front()(2,1) - rotationMatrix.front()(1,2));
+				double q2 = (1/(4*q4))*(rotationMatrix.front()(0,2) - rotationMatrix.front()(2,0));
+				double q3 = (1/(4*q4))*(rotationMatrix.front()(1,0) - rotationMatrix.front()(0,1));
+				tf::Transform transform;
+				transform.setOrigin(tf::Vector3(rotationMatrix.front()(0,3), rotationMatrix.front()(1,3), rotationMatrix.front()(2,3)));
+				tf::Quaternion q;
+				q.setX(q1);
+				q.setY(q2);
+				q.setZ(q3);
+				q.setW(q4);
+				transform.setRotation(q);
+				ros::Time now(0);
+				//publish pose
+				geometry_msgs::PoseStamped pose;
+				pose.header.stamp = input->header.stamp;
+				pose.header.frame_id = "camera_link";
+				pose.pose.position.x = 0;//rotationMatrix.front()(0,3);
+				pose.pose.position.y = 0;//rotationMatrix.front()(1,3);
+				pose.pose.position.z = 0;//rotationMatrix.front()(2,3);
+				pose.pose.orientation.x = q.x();
+				pose.pose.orientation.y = q.y();
+				pose.pose.orientation.z = q.z();
+				pose.pose.orientation.w = q.w();
+				
+				//pub_transform.sendTransform(tf::StampedTransform(transform, now, "map", "robot"));
+				
+				while (!tfl.waitForTransform("local_origin", "camera_link", now, ros::Duration(1)))
+            		ROS_ERROR("Couldn't find transform from 'camera_link' to 'local_origin', retrying...");
+            	geometry_msgs::PoseStamped local_origin_pose;
+            	tfl.transformPose("local_origin", now, pose, "camera_link", local_origin_pose);
+				pub_Pose.publish(local_origin_pose);
+				pub_Pose_test.publish(pose);
 			}
 		}
         else
