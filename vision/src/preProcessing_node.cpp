@@ -22,6 +22,8 @@ private:
     ros::Publisher pub_Points;
     ros::Subscriber sub_Points;
     int count;
+    int des_freq;
+    ros::Time last_time;
 
 
     public:
@@ -41,27 +43,28 @@ private:
         sub_Points = n.subscribe("/camera/depth_registered/points", 1, &preProccesing::rcCallback, this);
         pub_Points = n.advertise<sensor_msgs::PointCloud2> ("/preProcessed/Points", 1);
         count = 0;
+        des_freq = 5; //Hz
+        ros::Time last_time = ros::Time::now();
     }
 
     void rcCallback(const sensor_msgs::PointCloud2ConstPtr& input)
     {
-        if (count >= 6)
+        /*pcl::PointCloud<pcl::PointXYZRGB> input_cloud;
+        pcl::fromROSMsg (*input, input_cloud);
+        pcl::PointCloud<pcl::PointXYZRGB>::Ptr input_cloud_ptr (new pcl::PointCloud<pcl::PointXYZRGB>);
+        *input_cloud_ptr = input_cloud;*/
+        
+        ros::Time now = ros::Time::now();
+        cout << now-last_time << endl;
+        /*
+        if ((double) (now - last_time) >= (1/des_freq) - (1/des_freq)*0.15)
         {
-
-
-            /*pcl::PointCloud<pcl::PointXYZRGB> input_cloud;
-			pcl::fromROSMsg (*input, input_cloud);
-			pcl::PointCloud<pcl::PointXYZRGB>::Ptr input_cloud_ptr (new pcl::PointCloud<pcl::PointXYZRGB>);
-			*input_cloud_ptr = input_cloud;*/
             pub_Points.publish(input);
-
-            count = 0;
-		}
-
-        else
-        {
-            count++;
+            ros::Time last_time = input->header.stamp;
         }
+        */
+        count++;
+        cout << count << endl;
     }
 
     void run()

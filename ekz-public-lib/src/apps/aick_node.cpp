@@ -41,6 +41,7 @@ private:
 	vector<Matrix4f> lastRotationMatrix;
 	tf::StampedTransform tf_camera_link_to_local_origin;
 	tf::TransformListener tfl;
+	geometry_msgs::PoseStamped pose;
     public:
     AICKNode()
         : n("~")
@@ -54,11 +55,11 @@ private:
 		char mapbuf[512];
 		sprintf(mapbuf,"map.pcd");
 		m->savePCD(string(mapbuf));
-		cout << "Poses:" << endl;
+		/*cout << "Poses:" << endl;
 		for(unsigned int i = 0; i < poses.size(); i++)
 		{
 			cout << poses.at(i) << endl << endl;
-		}
+		}*/
 	}
 
     void init()
@@ -69,14 +70,25 @@ private:
         count = 0;
         counter = 0;
         firstTime = true;
-        m = new Map3D();
+        m = new Map3D();//bow(bow_path);
         lastRotationMatrix.push_back(Matrix4f::Identity());
+    	ros::Time now(0);
+        
+		pose.header.stamp = now;
+		pose.header.frame_id = "local_origin";
+		pose.pose.position.x = 0;
+		pose.pose.position.y = 0;
+		pose.pose.position.z = 0;
+		pose.pose.orientation.x = 1;
+		pose.pose.orientation.y = 0;
+		pose.pose.orientation.z = 0;
+		pose.pose.orientation.w = 0;
 
     }
 
     void pointsCallback(const sensor_msgs::PointCloud2ConstPtr& input)
     {
-        if (count >= 0)
+        if (count >= 2)
         {
             counter++;
 
@@ -111,7 +123,6 @@ private:
 	    	{
 		    	
 				printf("----------------------%i-------------------\nadding a new frame\n",counter);
-
 				//Add frame to map
 				m->addFrame(input_cloud_ptr);
 				vector<Matrix4f> rotationMatrix = m->estimateCurrentPose(lastRotationMatrix);
@@ -132,12 +143,12 @@ private:
 				transform.setRotation(q);
 				ros::Time now(0);
 				//publish pose
-				geometry_msgs::PoseStamped pose;
+				//geometry_msgs::PoseStamped pose;
 				pose.header.stamp = input->header.stamp;
-				pose.header.frame_id = "camera_link";
-				pose.pose.position.x = 0;//rotationMatrix.front()(0,3);
-				pose.pose.position.y = 0;//rotationMatrix.front()(1,3);
-				pose.pose.position.z = 0;//rotationMatrix.front()(2,3);
+				pose.header.frame_id = "local_origin";
+				pose.pose.position.x = rotationMatrix.front()(0,3);
+				pose.pose.position.y = rotationMatrix.front()(1,3);
+				pose.pose.position.z = rotationMatrix.front()(2,3);
 				pose.pose.orientation.x = q.x();
 				pose.pose.orientation.y = q.y();
 				pose.pose.orientation.z = q.z();
@@ -145,11 +156,11 @@ private:
 				
 				//pub_transform.sendTransform(tf::StampedTransform(transform, now, "map", "robot"));
 				
-				while (!tfl.waitForTransform("local_origin", "camera_link", now, ros::Duration(1)))
+				/*while (!tfl.waitForTransform("local_origin", "camera_link", now, ros::Duration(1)))
             		ROS_ERROR("Couldn't find transform from 'camera_link' to 'local_origin', retrying...");
             	geometry_msgs::PoseStamped local_origin_pose;
-            	tfl.transformPose("local_origin", now, pose, "camera_link", local_origin_pose);
-				pub_Pose.publish(local_origin_pose);
+            	tfl.transformPose("local_origin", now, pose, "camera_link", local_origin_pose);*/
+				pub_Pose.publish(pose);
 				pub_Pose_test.publish(pose);
 			}
 		}
@@ -164,7 +175,6 @@ private:
         while(ros::ok())
         {
             ros::spin(); //should be 30 fps approx
-
             //calc();
             //loop_rate.sleep();
         }
