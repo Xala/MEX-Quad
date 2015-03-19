@@ -81,7 +81,7 @@ double OrbFeatureDescriptor::distance(OrbFeatureDescriptor * other_descriptor)
 {
 	//printf("OrbFeatureDescriptor::distance\n");
 	int * disc 	= other_descriptor->descriptor;
-	int tmp0 	= descriptor[0] - disc[0];
+	/*int tmp0 	= descriptor[0] - disc[0];
 	int tmp1 	= descriptor[1] - disc[1];
 	int tmp2 	= descriptor[2] - disc[2];
 	int tmp3 	= descriptor[3] - disc[3];
@@ -116,6 +116,23 @@ double OrbFeatureDescriptor::distance(OrbFeatureDescriptor * other_descriptor)
 			
 	int tmp30 	= descriptor[30] - disc[30];
 	int tmp31 	= descriptor[31] - disc[31];
-	
-	return 0.0003*sqrt(double(tmp0*tmp0 + tmp1*tmp1 + tmp2*tmp2 + tmp3*tmp3 + tmp4*tmp4 + tmp5*tmp5 + tmp6*tmp6 + tmp7*tmp7 + tmp8*tmp8 + tmp9*tmp9 + tmp10*tmp10 + tmp11*tmp11 + tmp12*tmp12 + tmp13*tmp13 + tmp14*tmp14 + tmp15*tmp15 + tmp16*tmp16 + tmp17*tmp17 + tmp18*tmp18 + tmp19*tmp19 + tmp20*tmp20 + tmp21*tmp21 + tmp22*tmp22 + tmp23*tmp23 + tmp24*tmp24 + tmp25*tmp25 + tmp26*tmp26 + tmp27*tmp27 + tmp28*tmp28 + tmp29*tmp29 + tmp30*tmp30 + tmp31*tmp31));
+	cout << 0.0003*sqrt(double(tmp0*tmp0 + tmp1*tmp1 + tmp2*tmp2 + tmp3*tmp3 + tmp4*tmp4 + tmp5*tmp5 + tmp6*tmp6 + tmp7*tmp7 + tmp8*tmp8 + tmp9*tmp9 + tmp10*tmp10 + tmp11*tmp11 + tmp12*tmp12 + tmp13*tmp13 + tmp14*tmp14 + tmp15*tmp15 + tmp16*tmp16 + tmp17*tmp17 + tmp18*tmp18 + tmp19*tmp19 + tmp20*tmp20 + tmp21*tmp21 + tmp22*tmp22 + tmp23*tmp23 + tmp24*tmp24 + tmp25*tmp25 + tmp26*tmp26 + tmp27*tmp27 + tmp28*tmp28 + tmp29*tmp29 + tmp30*tmp30 + tmp31*tmp31)) << endl;
+	return 0.0003*sqrt(double(tmp0*tmp0 + tmp1*tmp1 + tmp2*tmp2 + tmp3*tmp3 + tmp4*tmp4 + tmp5*tmp5 + tmp6*tmp6 + tmp7*tmp7 + tmp8*tmp8 + tmp9*tmp9 + tmp10*tmp10 + tmp11*tmp11 + tmp12*tmp12 + tmp13*tmp13 + tmp14*tmp14 + tmp15*tmp15 + tmp16*tmp16 + tmp17*tmp17 + tmp18*tmp18 + tmp19*tmp19 + tmp20*tmp20 + tmp21*tmp21 + tmp22*tmp22 + tmp23*tmp23 + tmp24*tmp24 + tmp25*tmp25 + tmp26*tmp26 + tmp27*tmp27 + tmp28*tmp28 + tmp29*tmp29 + tmp30*tmp30 + tmp31*tmp31));*/
+	int       dist;
+    unsigned  val;
+ 
+    dist = 0;
+    val = *descriptor ^ *disc;    // XOR
+ 
+    // Count the number of bits set
+    while (val != 0)
+    {
+        // A bit is set, so increment the count and clear the bit
+        dist++;
+        val &= val - 1;
+    }
+ 
+    // Return the number of differing bits
+    //cout << 0.041*dist << endl;
+    return 0.041*dist;
 }
