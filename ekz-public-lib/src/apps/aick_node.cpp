@@ -20,7 +20,8 @@
 #include "highgui.h"
 #include <opencv.hpp>
 #include "ekz.h"
-
+#include <iostream>
+#include <fstream>
 using namespace std;
 
 bool firstTime;
@@ -42,6 +43,9 @@ private:
 	tf::StampedTransform tf_camera_link_to_local_origin;
 	tf::TransformListener tfl;
 	geometry_msgs::PoseStamped pose;
+	int nrMatches;
+	int lastMatches;
+	int badcount;
     public:
     AICKNode()
         : n("~")
@@ -55,11 +59,15 @@ private:
 		char mapbuf[512];
 		sprintf(mapbuf,"map.pcd");
 		m->savePCD(string(mapbuf));
-		/*cout << "Poses:" << endl;
+		cout << "bad frame removed" << badcount << endl;
+		ofstream myfile;
+		myfile.open ("example.txt");  		
+		myfile << "Poses:" << endl;
 		for(unsigned int i = 0; i < poses.size(); i++)
 		{
-			cout << poses.at(i) << endl << endl;
-		}*/
+			myfile << poses.at(i) << endl << endl;
+		}
+		myfile.close();
 	}
 
     void init()
@@ -72,6 +80,8 @@ private:
         firstTime = true;
         m = new Map3D();//bow(bow_path);
         lastRotationMatrix.push_back(Matrix4f::Identity());
+        lastMatches = 0;
+        badcount = 0;
     	ros::Time now(0);
         
 		pose.header.stamp = now;
@@ -88,7 +98,7 @@ private:
 
     void pointsCallback(const sensor_msgs::PointCloud2ConstPtr& input)
     {
-        if (count >= 2)
+        if (count >= 0)
         {
             counter++;
 
@@ -108,7 +118,7 @@ private:
 				m->setFeatureExtractor(new OrbExtractor());		//Use orb features
 
 				int max_points = 300;							//Number of keypoints used by matcher
-				int nr_iter = 10;								//Number of iterations the matcher will run
+				int nr_iter = 8;								//Number of iterations the matcher will run
 				float shrinking = 0.7;							//The rate of convergence for the matcher
 				float bow_threshold = 0.15;						//Bag of words threshold to avoid investigating bad matches
 				float distance_threshold = 0.015;				//Distance threshold to discard bad matches using euclidean information.
@@ -125,6 +135,14 @@ private:
 				printf("----------------------%i-------------------\nadding a new frame\n",counter);
 				//Add frame to map
 				m->addFrame(input_cloud_ptr);
+				nrMatches = m->numberOfMatchesInLastFrame();
+				int hej = m->numberOfFrames();
+				if (nrMatches < 40 and hej > 2)
+				{
+					cout << "nr matches " << nrMatches << endl;
+					m->removeLastFrame();
+					badcount ++;
+				}
 				vector<Matrix4f> rotationMatrix = m->estimateCurrentPose(lastRotationMatrix);
 				cout << rotationMatrix.front() << endl << endl;
 				lastRotationMatrix = rotationMatrix;
@@ -162,6 +180,7 @@ private:
             	tfl.transformPose("local_origin", now, pose, "camera_link", local_origin_pose);*/
 				pub_Pose.publish(pose);
 				pub_Pose_test.publish(pose);
+				lastMatches = nrMatches;
 			}
 		}
         else

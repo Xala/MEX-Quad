@@ -81,6 +81,9 @@ class Map3D
 
 	virtual vector<Matrix4f> estimate();
 	virtual vector<Matrix4f> estimateCurrentPose(vector<Matrix4f> lastPose);
+	virtual void removeLastFrame();
+	virtual int numberOfFrames();
+	virtual int numberOfMatchesInLastFrame();
 
 	virtual void setVerbose(bool v);
 	virtual void setCalibration(Calibration * cal);

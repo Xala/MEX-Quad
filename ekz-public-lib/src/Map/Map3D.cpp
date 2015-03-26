@@ -47,6 +47,18 @@ void Map3D::addFrame(RGBDFrame * frame){
 	frames.push_back(frame);
 }
 
+void Map3D::removeLastFrame() {
+	frames.pop_back();
+	transformations.pop_back();
+}
+
+int Map3D::numberOfFrames() {
+	return frames.size();
+}
+
+int Map3D::numberOfMatchesInLastFrame() {
+	return transformations.at(transformations.size()-1)->weight;
+}
 void Map3D::setVerbose(bool v){
 	verbose = v;
 	matcher->verbose = verbose;
