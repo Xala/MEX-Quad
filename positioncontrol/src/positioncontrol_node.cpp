@@ -41,11 +41,11 @@ public:
         desired_pose.header.frame_id = "fcu";
         desired_pose.pose.position.x = 0;
         desired_pose.pose.position.y = 0;
-        desired_pose.pose.position.z = 0.3;
-        desired_pose.pose.orientation.x = 1;
-        desired_pose.pose.orientation.y = 0;
-        desired_pose.pose.orientation.z = 0;
-        desired_pose.pose.orientation.w = 0;
+        desired_pose.pose.position.z = 0.7;
+        desired_pose.pose.orientation.x = pose.pose.orientation.x;
+        desired_pose.pose.orientation.y = pose.pose.orientation.y;
+        desired_pose.pose.orientation.z = pose.pose.orientation.z;
+        desired_pose.pose.orientation.w = pose.pose.orientation.w;
         pub_setpoint.publish(desired_pose);
     }
 
