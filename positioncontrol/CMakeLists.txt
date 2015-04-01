@@ -106,13 +106,18 @@ include_directories(
 
 ## Declare a cpp executable
  add_executable(positioncontrol_node src/positioncontrol_node.cpp)
+ add_executable(fakePose_node src/fakePose_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
  add_dependencies(positioncontrol_node positioncontrol_generate_messages_cpp)
+ add_dependencies(fakePose_node fakePose_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(positioncontrol_node
+   ${catkin_LIBRARIES}
+ )
+ target_link_libraries(fakePose_node
    ${catkin_LIBRARIES}
  )
 

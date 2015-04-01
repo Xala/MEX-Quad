@@ -25,7 +25,7 @@ int main(int argc, char **argv){
 	m->setMatcher(new BowAICK(max_points, nr_iter,shrinking,bow_threshold,distance_threshold,feature_threshold));//Create a new matcher
 
 	vector< RGBDFrame * > frames;
-	for(int i = 1; i <= 12; i+=1){
+	for(int i = 300; i <= 536; i+=1){
 		printf("----------------------%i-------------------\nadding a new frame\n",i);
 		
 		//Get paths to image files
