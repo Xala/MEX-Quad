@@ -38,7 +38,7 @@ public:
         geometry_msgs::PoseStamped desired_pose;
         ros::Time now(0);
         desired_pose.header.stamp = pose.header.stamp;
-        desired_pose.header.frame_id = "fcu";
+        desired_pose.header.frame_id = "local_origin";
         desired_pose.pose.position.x = 0;
         desired_pose.pose.position.y = 0;
         desired_pose.pose.position.z = 0.7;
