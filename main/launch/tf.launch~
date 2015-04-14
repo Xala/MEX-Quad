@@ -1,5 +1,5 @@
 <launch>
 	<node pkg="tf" type="static_transform_publisher"
 		name="tf_fcu_to_camera_link_publisher"
-		args="0.08 0 0.055 0 0 0 fcu camera_link 100" />
+		args="0.08 0 0.055 0 0 3.1415 fcu camera_link 100" />
 </launch>

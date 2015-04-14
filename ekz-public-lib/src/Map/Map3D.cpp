@@ -126,7 +126,7 @@ vector<Matrix4f> Map3D::estimateCurrentPose(vector<Matrix4f> lastPose)
 	return newPose;
 }
 
-void Map3D::savePCD(string path){savePCD(path,false, false, 0.01);}
+void Map3D::savePCD(string path){savePCD(path,false, false, 0.03);}
 void Map3D::savePCD(string path,bool randomcolor, bool trajectory, float resolution){
 	if(verbose){printf("Saving map in: %s\n",path.c_str());}
 	getLargestComponent();
