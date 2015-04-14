@@ -42,10 +42,10 @@ public:
         desired_pose.pose.position.x = 0;
         desired_pose.pose.position.y = 0;
         desired_pose.pose.position.z = 0.7;
-        desired_pose.pose.orientation.x = pose.pose.orientation.x;
-        desired_pose.pose.orientation.y = pose.pose.orientation.y;
-        desired_pose.pose.orientation.z = pose.pose.orientation.z;
-        desired_pose.pose.orientation.w = pose.pose.orientation.w;
+        desired_pose.pose.orientation.x = -0.028;
+        desired_pose.pose.orientation.y = -0.007;
+        desired_pose.pose.orientation.z = -0.712;
+        desired_pose.pose.orientation.w = 0.710;
         pub_setpoint.publish(desired_pose);
     }
 
