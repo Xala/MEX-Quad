@@ -23,10 +23,12 @@
 #include <iostream>
 #include <fstream>
 #include <boost/circular_buffer.hpp>
+#include <boost/thread.hpp>
 using namespace std;
 
 bool firstTime;
 string bow_path;
+string path;
 Map3D * m;
 
 
@@ -120,7 +122,8 @@ private:
         if (count >= 0)
         {
             counter++;
-
+            
+            //saveImg(input);
 
             pcl::PointCloud<pcl::PointXYZRGB> input_cloud;
 			pcl::fromROSMsg (*input, input_cloud);
@@ -204,8 +207,8 @@ private:
 					pose.header.stamp = input->header.stamp;
 					pose.header.frame_id = "camera_link";
 					pose.pose.position.x = transformationMatrix.front()(0,3);
-					pose.pose.position.y = transformationMatrix.front()(1,3);
-					pose.pose.position.z = transformationMatrix.front()(2,3);
+					pose.pose.position.y = transformationMatrix.front()(2,3);
+					pose.pose.position.z = transformationMatrix.front()(1,3);
 					/*pose.pose.orientation.x = q.x(); //lastLocalPose.pose.orientation.x; //q.x(); //
 					pose.pose.orientation.y = q.y(); //lastLocalPose.pose.orientation.y; //q.y(); //
 					pose.pose.orientation.z = q.z(); //lastLocalPose.pose.orientation.z; //q.z(); //
@@ -246,6 +249,7 @@ int main (int argc, char **argv)
 {
     ros::init(argc, argv, "aick_node");
 	bow_path = argv[1];
+	path = string(argv[2]);
 
     AICKNode my_node;
     my_node.run();
