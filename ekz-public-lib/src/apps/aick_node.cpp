@@ -107,7 +107,7 @@ private:
 		pose.pose.orientation.w = 0;*/
 		lastPose = pose;
 		lastPoses = boost::circular_buffer<geometry_msgs::PoseStamped>(3, pose);
-
+		
 
     }
 
@@ -146,7 +146,10 @@ private:
 				float distance_threshold = 0.015;				//Distance threshold to discard bad matches using euclidean information.
 				float feature_threshold = 0.15;					//Feature threshold to discard bad matches using feature information.
 
+
 				m->setMatcher(new BowAICK(max_points, nr_iter,shrinking,bow_threshold,distance_threshold,feature_threshold));//Create a new matcher
+				
+
 				firstTime = false;
 				vector< RGBDFrame * > frames;  
 				m->addFrame(input_cloud_ptr); 		
@@ -161,20 +164,22 @@ private:
 
 				nrMatches = m->numberOfMatchesInLastFrame();
 				int hej = m->numberOfFrames();
-				float time = (input->header.stamp - lastCloudTime).toSec();
+				/*float time = (input->header.stamp - lastCloudTime).toSec();
 				xSpeed = (lastTransformationMatrix.front()(0,3) - transformationMatrix.front()(0,3))/time;
 				ySpeed = (lastTransformationMatrix.front()(1,3) - transformationMatrix.front()(1,3))/time;
 				zSpeed = (lastTransformationMatrix.front()(2,3) - transformationMatrix.front()(2,3))/time;
-				//cout << time << " HEJ" << endl;
-				if ((nrMatches < 40 and hej > 2) or xSpeed > 1.3 or ySpeed > 1.3 or zSpeed > 1.3)
+				//cout << time << " HEJ" << endl;*/
+				if ((nrMatches < 40 and hej > 2)) //or xSpeed > 1.3 or ySpeed > 1.3 or zSpeed > 1.3)
 				{
+					
 					cout << "BAD MATCH" << endl << endl << endl;
 					m->removeLastFrame();
 					badcount ++;
 					//cout << lastPoses.front().pose.position.x << endl;
+
 					
 					pose.header.stamp = ros::Time::now();
-					pose.header.frame_id = "camera_link";
+					pose.header.frame_id = "local_origin";
 					pose.pose.position.x = lastPoses.at(2).pose.position.x + (lastPoses.at(2).pose.position.x - lastPoses.at(1).pose.position.x);
 					pose.pose.position.y = lastPoses.at(2).pose.position.y + (lastPoses.at(2).pose.position.y - lastPoses.at(1).pose.position.y);
 					pose.pose.position.z = lastPoses.at(2).pose.position.z + (lastPoses.at(2).pose.position.z - lastPoses.at(1).pose.position.z);
@@ -187,6 +192,7 @@ private:
 				}
 				else
 				{
+					//transformationMatrix = m->estimateCurrentPose(lastTransformationMatrix);
 					transformationMatrix = m->estimateCurrentPose(lastTransformationMatrix);
 					//cout << transformationMatrix.front() << endl << endl;
 					lastTransformationMatrix = transformationMatrix;
@@ -205,10 +211,10 @@ private:
 					//geometry_msgs::PoseStamped pose;
 					
 					pose.header.stamp = input->header.stamp;
-					pose.header.frame_id = "camera_link";
+					pose.header.frame_id = "local_origin";
 					pose.pose.position.x = transformationMatrix.front()(0,3);
 					pose.pose.position.y = transformationMatrix.front()(2,3);
-					pose.pose.position.z = transformationMatrix.front()(1,3);
+					pose.pose.position.z = -transformationMatrix.front()(1,3);
 					/*pose.pose.orientation.x = q.x(); //lastLocalPose.pose.orientation.x; //q.x(); //
 					pose.pose.orientation.y = q.y(); //lastLocalPose.pose.orientation.y; //q.y(); //
 					pose.pose.orientation.z = q.z(); //lastLocalPose.pose.orientation.z; //q.z(); //
@@ -249,7 +255,7 @@ int main (int argc, char **argv)
 {
     ros::init(argc, argv, "aick_node");
 	bow_path = argv[1];
-	path = string(argv[2]);
+	//path = string(argv[2]);
 
     AICKNode my_node;
     my_node.run();
