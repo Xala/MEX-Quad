@@ -29,7 +29,7 @@ Map3D::Map3D(){
 	calibration->fx			= 525.0;				//Focal Length X
 	calibration->fy			= 525.0;				//Focal Length Y
 	calibration->cx			= 319.5;				//Center coordinate X
-	calibration->cy			= 239.5;				//Center coordinate X
+	calibration->cy			= 239.5;				//Center coordinate Y
 	calibration->ds			= 1;					//Depth scaling for camera
 	calibration->scale		= 5000;					//Depth scaling in file due to discretization.
 }
@@ -39,7 +39,7 @@ void Map3D::addFrame(string rgb_path, string depth_path){								addFrame(calibr
 void Map3D::addFrame(Calibration * cal,string rgb_path, string depth_path){				addFrame(new FrameInput(cal,rgb_path,depth_path));}
 
 void Map3D::addFrame(pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud){						addFrame(calibration,cloud);}
-void Map3D::addFrame(Calibration * cal, pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud){	addFrame(new FrameInput(cal, *cloud,false, frames.size(), "./"));}
+void Map3D::addFrame(Calibration * cal, pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud){	addFrame(new FrameInput(cal, *cloud,true, frames.size(), "./imgs"));}
 
 void Map3D::addFrame(FrameInput * fi) {													addFrame(new RGBDFrame(fi,extractor,segmentation,verbose));}
 void Map3D::addFrame(RGBDFrame * frame){
@@ -126,7 +126,7 @@ vector<Matrix4f> Map3D::estimateCurrentPose(vector<Matrix4f> lastPose)
 	return newPose;
 }
 
-void Map3D::savePCD(string path){savePCD(path,false, false, 0.03);}
+void Map3D::savePCD(string path){savePCD(path,false, false, 0.01);}
 void Map3D::savePCD(string path,bool randomcolor, bool trajectory, float resolution){
 	if(verbose){printf("Saving map in: %s\n",path.c_str());}
 	getLargestComponent();

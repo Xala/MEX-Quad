@@ -1,6 +1,7 @@
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <tf/transform_broadcaster.h>
 #include <cmath>
 #include <tf/transform_broadcaster.h>
 
@@ -42,9 +43,15 @@ public:
         desired_pose.header.frame_id = "local_origin";
         desired_pose.pose.position.x = 0;
         desired_pose.pose.position.y = 0;
+<<<<<<< HEAD
         desired_pose.pose.position.z = 0.3;
 	tf::Quaternion q;
 	q.setRPY(0, 0, 3.1415);
+=======
+        desired_pose.pose.position.z = 0.7;
+        tf::Quaternion q;
+        q.setRPY(0, 0, 0);
+>>>>>>> dddd855989dae57461f865cee5f4a203bab272bb
         desired_pose.pose.orientation.x = q.x();
         desired_pose.pose.orientation.y = q.y();
         desired_pose.pose.orientation.z = q.z();
