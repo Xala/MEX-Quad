@@ -2,6 +2,7 @@
 #include <std_msgs/String.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <cmath>
+#include <tf/transform_broadcaster.h>
 
 
 class positioncontrolnode
@@ -41,11 +42,13 @@ public:
         desired_pose.header.frame_id = "local_origin";
         desired_pose.pose.position.x = 0;
         desired_pose.pose.position.y = 0;
-        desired_pose.pose.position.z = 0.7;
-        desired_pose.pose.orientation.x = -0.028;
-        desired_pose.pose.orientation.y = -0.007;
-        desired_pose.pose.orientation.z = -0.712;
-        desired_pose.pose.orientation.w = 0.710;
+        desired_pose.pose.position.z = 0.3;
+	tf::Quaternion q;
+	q.setRPY(0, 0, 3.1415);
+        desired_pose.pose.orientation.x = q.x();
+        desired_pose.pose.orientation.y = q.y();
+        desired_pose.pose.orientation.z = q.z();
+        desired_pose.pose.orientation.w = q.w();
         pub_setpoint.publish(desired_pose);
     }
 
