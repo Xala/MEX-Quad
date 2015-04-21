@@ -122,34 +122,24 @@ private:
         if (count >= 0)
         {
             counter++;
-            
-            //saveImg(input);
-
             pcl::PointCloud<pcl::PointXYZRGB> input_cloud;
 			pcl::fromROSMsg (*input, input_cloud);
 			pcl::PointCloud<pcl::PointXYZRGB>::Ptr input_cloud_ptr (new pcl::PointCloud<pcl::PointXYZRGB>);
 			*input_cloud_ptr = input_cloud;
-
             count = 0;
             if (firstTime == true)
 	    	{
 		    	//Create a standard map object
 				m->setVerbose(true);		//Set the map to give text output
-
 				m->loadCalibrationWords(bow_path,"orb", 500);	//set bag of words to orb 500 orb features from bow_path
 				m->setFeatureExtractor(new OrbExtractor());		//Use orb features
-
 				int max_points = 300;							//Number of keypoints used by matcher
 				int nr_iter = 8;								//Number of iterations the matcher will run
 				float shrinking = 0.7;							//The rate of convergence for the matcher
 				float bow_threshold = 0.15;						//Bag of words threshold to avoid investigating bad matches
 				float distance_threshold = 0.015;				//Distance threshold to discard bad matches using euclidean information.
 				float feature_threshold = 0.15;					//Feature threshold to discard bad matches using feature information.
-
-
 				m->setMatcher(new BowAICK(max_points, nr_iter,shrinking,bow_threshold,distance_threshold,feature_threshold));//Create a new matcher
-				
-
 				firstTime = false;
 				vector< RGBDFrame * > frames;  
 				m->addFrame(input_cloud_ptr); 		
@@ -160,8 +150,6 @@ private:
 				printf("----------------------%i-------------------\nadding a new frame\n",counter);
 				//Add frame to map
 				m->addFrame(input_cloud_ptr);
-				
-
 				nrMatches = m->numberOfMatchesInLastFrame();
 				int hej = m->numberOfFrames();
 				/*float time = (input->header.stamp - lastCloudTime).toSec();
@@ -197,14 +185,14 @@ private:
 					//cout << transformationMatrix.front() << endl << endl;
 					lastTransformationMatrix = transformationMatrix;
 					//Convert rotation matrix to quaternion
-					tf::Matrix3x3 rotationMatrix;
+					/*tf::Matrix3x3 rotationMatrix;
     				rotationMatrix.setValue(transformationMatrix.front()(0,0), transformationMatrix.front()(0,1),transformationMatrix.front()(0,2),
     					transformationMatrix.front()(1,0), transformationMatrix.front()(1,1),transformationMatrix.front()(1,2),
                         transformationMatrix.front()(2,0), transformationMatrix.front()(2,1),transformationMatrix.front()(2,2) );
 					
 					tf::Quaternion q;
     				rotationMatrix.getRotation(q);
-					tf::Transform transform;
+					tf::Transform transform;*/
 					//transform.setOrigin(tf::Vector3(transformationMatrix.front()(0,3), transformationMatrix.front()(1,3), transformationMatrix.front()(2,3)));
 					
 					//publish pose
@@ -222,7 +210,7 @@ private:
 					pub_Pose.publish(pose);
 				}
 				//pub_transform.sendTransform(tf::StampedTransform(transform, now, "map", "robot"));
-				ros::Time now(0);
+				//ros::Time now(0);
 				/*while (!tfl.waitForTransform("local_origin", "camera_link", now, ros::Duration(1)))
             		ROS_ERROR("Couldn't find transform from 'camera_link' to 'local_origin', retrying...");
             	geometry_msgs::PoseStamped local_origin_pose;
