@@ -42,11 +42,12 @@ class BowAICK: public FrameMatcher
 		bool iteration_shrinking;
 		bool fitness_shrinking;
 		float fitness_constant;
+		bool debu;
 
 		int max_points;
 		BowAICK();
 		BowAICK(int max_points_);
-		BowAICK(int max_points_, int nr_iter_, float shrinking_,float bow_threshold_, float distance_threshold_,float feature_threshold_);
+		BowAICK(int max_points_, int nr_iter_, float shrinking_,float bow_threshold_, float distance_threshold_,float feature_threshold_, bool debu);
 		~BowAICK();
 		Transformation * getTransformation(RGBDFrame * src, RGBDFrame * dst);
 		float getAlpha(int iteration);

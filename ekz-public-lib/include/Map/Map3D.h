@@ -76,6 +76,15 @@ class Map3D
 	
 	virtual void addFrame(FrameInput * fi);
 	virtual void addFrame(RGBDFrame * frame);
+
+	virtual void addFrameCompareWithFirst(string rgb_path, string depth_path);
+	virtual void addFrameCompareWithFirst(Calibration * cal,string rgb_path, string depth_path);
+	
+	virtual void addFrameCompareWithFirst(pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud);
+	virtual void addFrameCompareWithFirst(Calibration * cal, pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud);
+	
+	virtual void addFrameCompareWithFirst(FrameInput * fi);
+	virtual void addFrameCompareWithFirst(RGBDFrame * frame);
 	
 	virtual void addTransformation(Transformation * transformation);
 

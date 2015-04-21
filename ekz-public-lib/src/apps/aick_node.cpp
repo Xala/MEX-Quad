@@ -30,6 +30,7 @@ bool firstTime;
 string bow_path;
 string path;
 Map3D * m;
+Map3D * keys;
 
 
 class AICKNode
@@ -43,6 +44,7 @@ private:
     int count;
 	int counter;
 	Map3D * m;
+	Map3D * keys;
 	vector<Matrix4f> lastTransformationMatrix;
 	vector<Matrix4f> transformationMatrix;
 	tf::StampedTransform tf_camera_link_to_local_origin;
@@ -56,6 +58,8 @@ private:
 	boost::circular_buffer<geometry_msgs::PoseStamped> lastPoses;
 	double xSpeed, ySpeed, zSpeed;
 	ros::Time lastCloudTime;
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr last_input_cloud_ptr;
+
     public:
     AICKNode()
         : n("~")
@@ -90,6 +94,7 @@ private:
         counter = 0;
         firstTime = true;
         m = new Map3D();//bow(bow_path);
+        keys = new Map3D();
         lastTransformationMatrix.push_back(Matrix4f::Identity());
         transformationMatrix = lastTransformationMatrix;
         lastMatches = 0;
@@ -107,7 +112,7 @@ private:
 		pose.pose.orientation.w = 0;*/
 		lastPose = pose;
 		lastPoses = boost::circular_buffer<geometry_msgs::PoseStamped>(3, pose);
-
+		pcl::PointCloud<pcl::PointXYZRGB>::Ptr last_input_cloud_ptr (new pcl::PointCloud<pcl::PointXYZRGB>);
 
     }
 
@@ -134,11 +139,15 @@ private:
             if (firstTime == true)
 	    	{
 		    	//Create a standard map object
-				m->setVerbose(true);		//Set the map to give text output
+				m->setVerbose(false);		//Set the map to give text output
 
 				m->loadCalibrationWords(bow_path,"orb", 500);	//set bag of words to orb 500 orb features from bow_path
 				m->setFeatureExtractor(new OrbExtractor());		//Use orb features
 
+				keys->setVerbose(true);		//Set the map to give text output
+				keys->loadCalibrationWords(bow_path,"orb", 500);	//set bag of words to orb 500 orb features from bow_path
+				keys->setFeatureExtractor(new OrbExtractor());		//Use orb features
+				
 				int max_points = 300;							//Number of keypoints used by matcher
 				int nr_iter = 8;								//Number of iterations the matcher will run
 				float shrinking = 0.7;							//The rate of convergence for the matcher
@@ -146,50 +155,58 @@ private:
 				float distance_threshold = 0.015;				//Distance threshold to discard bad matches using euclidean information.
 				float feature_threshold = 0.15;					//Feature threshold to discard bad matches using feature information.
 
-				m->setMatcher(new BowAICK(max_points, nr_iter,shrinking,bow_threshold,distance_threshold,feature_threshold));//Create a new matcher
+				keys->setMatcher(new BowAICK(max_points, nr_iter,shrinking,bow_threshold,distance_threshold,feature_threshold, false));//Create a new matcher
+				m->setMatcher(new BowAICK(max_points, nr_iter,shrinking,bow_threshold,distance_threshold,feature_threshold, false));//Create a new matcher
+				
+
 				firstTime = false;
 				vector< RGBDFrame * > frames;  
-				m->addFrame(input_cloud_ptr); 		
+				m->addFrameCompareWithFirst(input_cloud_ptr); 		
+				keys->addFrame(input_cloud_ptr); 
 	    	}
 	    	else
 	    	{
 		    	
 				printf("----------------------%i-------------------\nadding a new frame\n",counter);
 				//Add frame to map
-				m->addFrame(input_cloud_ptr);
+				m->addFrameCompareWithFirst(input_cloud_ptr);
 				
 
 				nrMatches = m->numberOfMatchesInLastFrame();
 				int hej = m->numberOfFrames();
-				float time = (input->header.stamp - lastCloudTime).toSec();
+				/*float time = (input->header.stamp - lastCloudTime).toSec();
 				xSpeed = (lastTransformationMatrix.front()(0,3) - transformationMatrix.front()(0,3))/time;
 				ySpeed = (lastTransformationMatrix.front()(1,3) - transformationMatrix.front()(1,3))/time;
 				zSpeed = (lastTransformationMatrix.front()(2,3) - transformationMatrix.front()(2,3))/time;
-				//cout << time << " HEJ" << endl;
-				if ((nrMatches < 40 and hej > 2) or xSpeed > 1.3 or ySpeed > 1.3 or zSpeed > 1.3)
+				//cout << time << " HEJ" << endl;*/
+				if ((nrMatches < 40 and hej > 2)) //or xSpeed > 1.3 or ySpeed > 1.3 or zSpeed > 1.3)
 				{
+					
+					keys->addFrame(last_input_cloud_ptr);
 					cout << "BAD MATCH" << endl << endl << endl;
 					m->removeLastFrame();
 					badcount ++;
 					//cout << lastPoses.front().pose.position.x << endl;
-					
-					pose.header.stamp = ros::Time::now();
-					pose.header.frame_id = "camera_link";
+
+					m->addFrame(input_cloud_ptr); 		
+					/*pose.header.stamp = ros::Time::now();
+					pose.header.frame_id = "local_origin";
 					pose.pose.position.x = lastPoses.at(2).pose.position.x + (lastPoses.at(2).pose.position.x - lastPoses.at(1).pose.position.x);
 					pose.pose.position.y = lastPoses.at(2).pose.position.y + (lastPoses.at(2).pose.position.y - lastPoses.at(1).pose.position.y);
-					pose.pose.position.z = lastPoses.at(2).pose.position.z + (lastPoses.at(2).pose.position.z - lastPoses.at(1).pose.position.z);
+					pose.pose.position.z = lastPoses.at(2).pose.position.z + (lastPoses.at(2).pose.position.z - lastPoses.at(1).pose.position.z);*/
 					/*pose.pose.orientation.x = lastPoses.at(2).pose.orientation.x; //lastLocalPose.pose.orientation.x; //q.x();
 					pose.pose.orientation.y = lastPoses.at(2).pose.orientation.y; //lastLocalPose.pose.orientation.y; //q.y();
 					pose.pose.orientation.z = lastPoses.at(2).pose.orientation.z; //lastLocalPose.pose.orientation.z; //q.z();
 					pose.pose.orientation.w = lastPoses.at(2).pose.orientation.w; //lastLocalPose.pose.orientation.w; //q.w();
 					//pub_Pose.publish(pose);*/
-					pub_Pose.publish(pose);
+					//pub_Pose.publish(pose);
 				}
 				else
 				{
+					//transformationMatrix = m->estimateCurrentPose(lastTransformationMatrix);
 					transformationMatrix = m->estimateCurrentPose(lastTransformationMatrix);
 					//cout << transformationMatrix.front() << endl << endl;
-					lastTransformationMatrix = transformationMatrix;
+					//lastTransformationMatrix = transformationMatrix;
 					//Convert rotation matrix to quaternion
 					tf::Matrix3x3 rotationMatrix;
     				rotationMatrix.setValue(transformationMatrix.front()(0,0), transformationMatrix.front()(0,1),transformationMatrix.front()(0,2),
@@ -205,10 +222,10 @@ private:
 					//geometry_msgs::PoseStamped pose;
 					
 					pose.header.stamp = input->header.stamp;
-					pose.header.frame_id = "camera_link";
+					pose.header.frame_id = "local_origin";
 					pose.pose.position.x = transformationMatrix.front()(0,3);
 					pose.pose.position.y = transformationMatrix.front()(2,3);
-					pose.pose.position.z = transformationMatrix.front()(1,3);
+					pose.pose.position.z = -transformationMatrix.front()(1,3);
 					/*pose.pose.orientation.x = q.x(); //lastLocalPose.pose.orientation.x; //q.x(); //
 					pose.pose.orientation.y = q.y(); //lastLocalPose.pose.orientation.y; //q.y(); //
 					pose.pose.orientation.z = q.z(); //lastLocalPose.pose.orientation.z; //q.z(); //
@@ -226,6 +243,7 @@ private:
 				lastMatches = nrMatches;
 				lastPoses.push_back(pose);
 				lastCloudTime = input->header.stamp;
+				last_input_cloud_ptr = input_cloud_ptr;
 			}
 		}
         else
@@ -249,7 +267,7 @@ int main (int argc, char **argv)
 {
     ros::init(argc, argv, "aick_node");
 	bow_path = argv[1];
-	path = string(argv[2]);
+	//path = string(argv[2]);
 
     AICKNode my_node;
     my_node.run();

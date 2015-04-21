@@ -39,17 +39,30 @@ void Map3D::addFrame(string rgb_path, string depth_path){								addFrame(calibr
 void Map3D::addFrame(Calibration * cal,string rgb_path, string depth_path){				addFrame(new FrameInput(cal,rgb_path,depth_path));}
 
 void Map3D::addFrame(pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud){						addFrame(calibration,cloud);}
-void Map3D::addFrame(Calibration * cal, pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud){	addFrame(new FrameInput(cal, *cloud,true, frames.size(), "./imgs"));}
+void Map3D::addFrame(Calibration * cal, pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud){	addFrame(new FrameInput(cal, *cloud,true, frames.size(), "./imgs/keyimgs"));}
 
 void Map3D::addFrame(FrameInput * fi) {													addFrame(new RGBDFrame(fi,extractor,segmentation,verbose));}
 void Map3D::addFrame(RGBDFrame * frame){
 	if(frames.size() > 0){transformations.push_back(matcher->getTransformation(frame, frames.back()));}
 	frames.push_back(frame);
 }
+void Map3D::addFrameCompareWithFirst(string rgb_path, string depth_path){								addFrameCompareWithFirst(calibration,rgb_path,depth_path);}
+void Map3D::addFrameCompareWithFirst(Calibration * cal,string rgb_path, string depth_path){				addFrameCompareWithFirst(new FrameInput(cal,rgb_path,depth_path));}
 
+void Map3D::addFrameCompareWithFirst(pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud){						addFrameCompareWithFirst(calibration,cloud);}
+void Map3D::addFrameCompareWithFirst(Calibration * cal, pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud){	addFrameCompareWithFirst(new FrameInput(cal, *cloud,true, frames.size(), "./imgs"));}
+
+void Map3D::addFrameCompareWithFirst(FrameInput * fi) {													addFrameCompareWithFirst(new RGBDFrame(fi,extractor,segmentation,verbose));}
+void Map3D::addFrameCompareWithFirst(RGBDFrame * frame){
+	if(frames.size() > 0){transformations.push_back(matcher->getTransformation(frame, frames.front()));}
+	frames.push_back(frame);
+}
 void Map3D::removeLastFrame() {
-	frames.pop_back();
-	transformations.pop_back();
+	/*frames.pop_back();
+	transformations.pop_back();*/
+	frames.clear();
+	transformations.clear();
+	poses.clear();
 }
 
 int Map3D::numberOfFrames() {

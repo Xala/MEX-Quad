@@ -2,7 +2,7 @@
 #include <vector>
 
 using namespace std;
-const bool debugg_BowAICK = false;
+bool debugg_BowAICK = false;
 
 BowAICK::BowAICK()
 {
@@ -50,7 +50,7 @@ BowAICK::BowAICK(int max_points_)
 	fitness_constant = 0.1;
 }
 
-BowAICK::BowAICK(int max_points_, int nr_iter_, float shrinking_,float bow_threshold_, float distance_threshold_,float feature_threshold_){
+BowAICK::BowAICK(int max_points_, int nr_iter_, float shrinking_,float bow_threshold_, float distance_threshold_,float feature_threshold_, bool debu){
 	debugg = false;
 	verbose = false;
 	name = "BowAICK";
@@ -66,6 +66,7 @@ BowAICK::BowAICK(int max_points_, int nr_iter_, float shrinking_,float bow_thres
 	iteration_shrinking = true;
 	fitness_shrinking = false;
 	fitness_constant = 0.1;
+	debugg_BowAICK = debu;
 }
 
 BowAICK::~BowAICK(){printf("delete BowAICK\n");}

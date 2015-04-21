@@ -2,7 +2,12 @@
 
 using namespace std;
 
+vector<Matrix4f> lastTransformationMatrix;
+vector<Matrix4f> transformationMatrix;
+
 int main(int argc, char **argv){
+	lastTransformationMatrix.push_back(Matrix4f::Identity());
+    transformationMatrix = lastTransformationMatrix;
 	printf("starting testing software2\n");
 	printf("give path to files as input\n");
 	string input = argv[1];
@@ -22,10 +27,19 @@ int main(int argc, char **argv){
 	float distance_threshold = 0.015;				//Distance threshold to discard bad matches using euclidean information.
 	float feature_threshold = 0.15;					//Feature threshold to discard bad matches using feature information.
 	
-	m->setMatcher(new BowAICK(max_points, nr_iter,shrinking,bow_threshold,distance_threshold,feature_threshold));//Create a new matcher
-
+	m->setMatcher(new BowAICK(max_points, nr_iter,shrinking,bow_threshold,distance_threshold,feature_threshold, true));//Create a new matcher
+	int k;
+	int l;
+	int n;
+	cout << "Please enter start image: ";
+	cin >> k;
+	cout << "Please enter end image: " ;
+	cin >> l;
+	cout << "Enter stepsize: ";
+	cin >> n;
+	bool hej = false;
 	vector< RGBDFrame * > frames;
-	for(int i = 400; i <= 425; i+=1){
+	for(int i = k; i <= l; i+= n){
 		printf("----------------------%i-------------------\nadding a new frame\n",i);
 		
 		//Get paths to image files
@@ -36,15 +50,27 @@ int main(int argc, char **argv){
 
 		//Add frame to map
 		m->addFrame(string(rgbbuf) , string(depthbuf));
+		if (hej == true) {
+			transformationMatrix = m->estimateCurrentPose(lastTransformationMatrix);
+			lastTransformationMatrix = transformationMatrix;
+			cout << "X: " << transformationMatrix.front()(0,3);
+			cout << ", Y: " << transformationMatrix.front()(2,3);
+			cout << ", Z: " << -transformationMatrix.front()(1,3) << endl;
+		}
+		hej = true;
 	}
 	
 	vector<Matrix4f> poses = m->estimate();	//Estimate poses for the frames using the map object.
 	m->savePCD("test.pcd");					//Saves a downsampled pointcloud with aligned data.
 	
 	//Print poses
-	cout << "Poses:" << endl;
-	for(unsigned int i = 0; i < poses.size(); i++){
-		cout << poses.at(i) << endl << endl;
+	ofstream myfile;
+	myfile.open ("poses.txt");  		
+	myfile << "Poses:" << endl;
+	for(unsigned int i = 0; i < poses.size(); i++)
+	{
+		myfile << poses.at(i) << endl << endl;
 	}
+	myfile.close();
 	return 0;
 }
