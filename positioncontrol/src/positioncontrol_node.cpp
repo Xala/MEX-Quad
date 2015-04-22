@@ -47,7 +47,7 @@ public:
         state = *msg;
         if (state.mode == "OFFBOARD")
         {
-        	static bool posLock = true;
+        	posLock = true;
         }
         calc();
     }
