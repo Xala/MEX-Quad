@@ -138,8 +138,8 @@ Transformation * BowAICK::getTransformation(RGBDFrame * src, RGBDFrame * dst)
 				data[3 * (j * (2*width) + (width+i)) + 0] = data_dst[ind +0];
 				data[3 * (j * (2*width) + (width+i)) + 1] = data_dst[ind +1];
 				data[3 * (j * (2*width) + (width+i)) + 2] = data_dst[ind +2];
-				data[3 * (j * (2*width) + (i)) + 0] = data_src[ind +2];
-				data[3 * (j * (2*width) + (i)) + 1] = data_src[ind +2];
+				data[3 * (j * (2*width) + (i)) + 0] = data_src[ind +0];
+				data[3 * (j * (2*width) + (i)) + 1] = data_src[ind +1];
 				data[3 * (j * (2*width) + (i)) + 2] = data_src[ind +2];
 			}
 		}
