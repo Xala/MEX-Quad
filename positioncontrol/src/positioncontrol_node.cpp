@@ -66,18 +66,15 @@ public:
         	desired_pose.pose.position.x = pose.pose.position.x;
 	        desired_pose.pose.position.y = pose.pose.position.y;
 	        desired_pose.pose.position.z = pose.pose.position.z;
-	        desired_pose.pose.orientation.x = pose.pose.orientation.x;
-	        desired_pose.pose.orientation.y = pose.pose.orientation.y;
-	        desired_pose.pose.orientation.z = pose.pose.orientation.z;
-	        desired_pose.pose.orientation.w = pose.pose.orientation.w;
 	        tf::Quaternion pri;
-	        double roll, pitch, yaw;
+	        double yaw;
 			yaw = tf::getYaw(pose.pose.orientation);
 			pri.setRPY(0, 0, yaw);
-			std::cout << pri.x() << std::endl;
-			std::cout << pri.y() << std::endl;
-			std::cout << pri.z() << std::endl;
-			std::cout << pri.w() << std::endl;
+	        desired_pose.pose.orientation.x = pri.x();
+	        desired_pose.pose.orientation.y = pri.y();
+	        desired_pose.pose.orientation.z = pri.z();
+	        desired_pose.pose.orientation.w = pri.w();
+
         }
         else if (once)
         {
