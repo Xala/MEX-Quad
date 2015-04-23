@@ -30,6 +30,7 @@ public:
         sub_pose = nh.subscribe("/mavros/position/local", 1, &positioncontrolnode::poseCallback, this);
         sub_state = nh.subscribe("/mavros/state", 1, &positioncontrolnode::stateCallback, this);
         once = true;
+
     }
 
     ~positioncontrolnode()
@@ -69,6 +70,14 @@ public:
 	        desired_pose.pose.orientation.y = pose.pose.orientation.y;
 	        desired_pose.pose.orientation.z = pose.pose.orientation.z;
 	        desired_pose.pose.orientation.w = pose.pose.orientation.w;
+	        tf::Quaternion pri;
+	        double roll, pitch, yaw;
+			yaw = tf::getYaw(pose.pose.orientation);
+			pri.setRPY(0, 0, yaw);
+			std::cout << pri.x() << std::endl;
+			std::cout << pri.y() << std::endl;
+			std::cout << pri.z() << std::endl;
+			std::cout << pri.w() << std::endl;
         }
         else if (once)
         {
