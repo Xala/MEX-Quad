@@ -65,7 +65,7 @@ private:
 
     ~AICKNode()
     {
-    	vector<Matrix4f> poses = m->estimate(); //Estimate poses for the frames using the map object.
+    	/*vector<Matrix4f> poses = m->estimate(); //Estimate poses for the frames using the map object.
 		char mapbuf[512];
 		sprintf(mapbuf,"map.pcd");
 		m->savePCD(string(mapbuf));
@@ -77,7 +77,7 @@ private:
 		{
 			myfile << poses.at(i) << endl << endl;
 		}
-		myfile.close();
+		myfile.close();*/
 	}
 
     void init()
@@ -171,11 +171,11 @@ private:
 					pose.pose.position.x = lastPoses.at(2).pose.position.x + (lastPoses.at(2).pose.position.x - lastPoses.at(1).pose.position.x);
 					pose.pose.position.y = lastPoses.at(2).pose.position.y + (lastPoses.at(2).pose.position.y - lastPoses.at(1).pose.position.y);
 					pose.pose.position.z = lastPoses.at(2).pose.position.z + (lastPoses.at(2).pose.position.z - lastPoses.at(1).pose.position.z);
-					/*pose.pose.orientation.x = lastPoses.at(2).pose.orientation.x; //lastLocalPose.pose.orientation.x; //q.x();
+					pose.pose.orientation.x = lastPoses.at(2).pose.orientation.x; //lastLocalPose.pose.orientation.x; //q.x();
 					pose.pose.orientation.y = lastPoses.at(2).pose.orientation.y; //lastLocalPose.pose.orientation.y; //q.y();
 					pose.pose.orientation.z = lastPoses.at(2).pose.orientation.z; //lastLocalPose.pose.orientation.z; //q.z();
 					pose.pose.orientation.w = lastPoses.at(2).pose.orientation.w; //lastLocalPose.pose.orientation.w; //q.w();
-					//pub_Pose.publish(pose);*/
+					//pub_Pose.publish(pose);
 					pub_Pose.publish(pose);
 				}
 				else
@@ -203,10 +203,10 @@ private:
 					pose.pose.position.x = transformationMatrix.front()(0,3);
 					pose.pose.position.y = transformationMatrix.front()(2,3);
 					pose.pose.position.z = -transformationMatrix.front()(1,3);
-					/*pose.pose.orientation.x = q.x(); //lastLocalPose.pose.orientation.x; //q.x(); //
-					pose.pose.orientation.y = q.y(); //lastLocalPose.pose.orientation.y; //q.y(); //
-					pose.pose.orientation.z = q.z(); //lastLocalPose.pose.orientation.z; //q.z(); //
-					pose.pose.orientation.w = q.w(); //lastLocalPose.pose.orientation.w; //q.w(); // */
+					pose.pose.orientation.x = lastLocalPose.pose.orientation.x; //q.x(); //
+					pose.pose.orientation.y = lastLocalPose.pose.orientation.y; //q.y(); //
+					pose.pose.orientation.z = lastLocalPose.pose.orientation.z; //q.z(); //
+					pose.pose.orientation.w = lastLocalPose.pose.orientation.w; //q.w(); // 
 					pub_Pose.publish(pose);
 				}
 				//pub_transform.sendTransform(tf::StampedTransform(transform, now, "map", "robot"));
