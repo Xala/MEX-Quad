@@ -11,6 +11,7 @@ int main(int argc, char **argv){
 	int step = atoi(argv[4]);			//See how many files to step
 	Map3D * m = new Map3Dbow(output);	//Create a bow map object
 	m->setVerbose(true);				//Set the map to give text output
+	m->setFeatureExtractor(new OrbExtractor());
 
 	vector< RGBDFrame * > frames;
 	for(int i = step; i <= nr_files; i+=step){

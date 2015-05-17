@@ -10,6 +10,9 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   tf
+  cv_bridge
+  std_msgs
+  image_transport
 )
 
 ## System dependencies are found with CMake's conventions
@@ -84,7 +87,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES vision
-#  CATKIN_DEPENDS libpcl-all-dev pcl_conversions pcl_ros roscpp sensor_msgs tf
+#  CATKIN_DEPENDS libpcl-all-dev pcl_conversions pcl_ros roscpp sensor_msgs tf cv_bridge std_msgs image_transport
 #  DEPENDS system_lib
 )
 

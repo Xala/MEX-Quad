@@ -47,9 +47,22 @@ void Map3D::addFrame(RGBDFrame * frame){
 	frames.push_back(frame);
 }
 
+void Map3D::addFrameKey(string rgb_path, string depth_path){								addFrameKey(calibration,rgb_path,depth_path);}
+void Map3D::addFrameKey(Calibration * cal,string rgb_path, string depth_path){				addFrameKey(new FrameInput(cal,rgb_path,depth_path));}
+
+void Map3D::addFrameKey(pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud){						addFrame(calibration,cloud);}
+void Map3D::addFrameKey(Calibration * cal, pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud){	addFrameKey(new FrameInput(cal, *cloud,true, frames.size(), "./imgs"));}
+
+void Map3D::addFrameKey(FrameInput * fi) {													addFrameKey(new RGBDFrame(fi,extractor,segmentation,verbose));}
+void Map3D::addFrameKey(RGBDFrame * frame){
+	if(frames.size() > 0){transformations.push_back(matcher->getTransformation(frame, frames.front()));}
+	frames.push_back(frame);
+}
+
 void Map3D::removeLastFrame() {
 	frames.pop_back();
 	transformations.pop_back();
+	poses.pop_back();
 }
 
 int Map3D::numberOfFrames() {

@@ -9,7 +9,7 @@ int main(int argc, char **argv){
 	printf("sequentally matches frames in form of pcd files given as input\n");
 
 	Map3D * m = new Map3D();	//Create a standard map object
-	m->setVerbose(true);		//Set the map to give text output				
+	m->setVerbose(true);		//Set the map to give text output		
 	for(int i = 1; i < argc; i++){
 		string input = string(argv[i]);
 		printf("input: %s\n",input.c_str());

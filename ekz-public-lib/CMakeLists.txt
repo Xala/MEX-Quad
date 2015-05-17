@@ -115,6 +115,12 @@ target_link_libraries(example_register_pcd_standalone ${OpenCV_LIBRARIES} ${catk
 add_executable(example_register_images_fast_map src/apps/example_register_images_fast_map.cpp)
 target_link_libraries(example_register_images_fast_map ${OpenCV_LIBRARIES} ${catkin_LIBRARIES} ${PCL_LIBRARIES} core_ekzpublic map3d_ekzpublic)
 
+add_executable(example_register_images_fast_key_map src/apps/example_register_images_fast_key_map.cpp)
+target_link_libraries(example_register_images_fast_key_map ${OpenCV_LIBRARIES} ${catkin_LIBRARIES} ${PCL_LIBRARIES} core_ekzpublic map3d_ekzpublic)
+
+add_executable(example_register_images_fast_skip_map src/apps/example_register_images_fast_skip_map.cpp)
+target_link_libraries(example_register_images_fast_skip_map ${OpenCV_LIBRARIES} ${catkin_LIBRARIES} ${PCL_LIBRARIES} core_ekzpublic map3d_ekzpublic)
+
 add_executable(aick_node src/apps/aick_node.cpp)
 target_link_libraries(aick_node ${OpenCV_LIBRARIES} ${catkin_LIBRARIES} ${PCL_LIBRARIES} core_ekzpublic map3d_ekzpublic)
 

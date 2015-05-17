@@ -10,80 +10,54 @@
 #include <pcl_conversions/pcl_conversions.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/point_cloud_conversion.h>
+#include <sensor_msgs/Image.h>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/core/core.hpp>
+#include <cv_bridge/cv_bridge.h>
+#include <sensor_msgs/image_encodings.h>
+#include <iostream>
 
-
-
+using namespace cv;
 using namespace std;
+ros::Publisher img_pub;
 
-class preProccesing
+int main( int argc, char** argv )
 {
-private:
-    ros::NodeHandle n;
-    ros::Publisher pub_Points;
-    ros::Subscriber sub_Points;
-    int count;
-    int des_freq;
-    ros::Time last_time;
-
-
-    public:
-    preProccesing()
-        : n("~")
+    if( argc != 2)
     {
-        init();
+     cout <<" Usage: display_image ImageToLoadAndDisplay" << endl;
+     return -1;
     }
+    ros::init(argc, argv, "preProccessing_node");
+    ros::NodeHandle nh;
+    img_pub = nh.advertise<sensor_msgs::Image>("/camera/image_raw", 1);
 
-    ~preProccesing()
+    Mat image;
+    image = imread(argv[1], CV_LOAD_IMAGE_COLOR);   // Read the file
+
+    if(! image.data )                              // Check for invalid input
     {
+        cout <<  "Could not open or find the image" << std::endl ;
+        return -1;
+    }
+    cv_bridge::CvImage out_msg;
+	//out_msg.header   = in_msg->header; // Same timestamp and tf frame as input image
+	out_msg.encoding = sensor_msgs::image_encodings::TYPE_32FC1; // Or whatever
+	out_msg.image    = image; // Your cv::Mat
+	int width = 640;
+	int height = 480;
 
+	IplImage * rgb_img							= cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 3);
+	Mat * rgb_data								= (Mat *)(rgb_img->imageData);
+	//rgb_data = * image;
+	while(true)
+	{
+		img_pub.publish(out_msg.toImageMsg());
 	}
+    //namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
+    //imshow( "Display window", image );                   // Show our image inside it.
 
-    void init()
-    {
-        sub_Points = n.subscribe("/camera/depth_registered/points", 1, &preProccesing::rcCallback, this);
-        pub_Points = n.advertise<sensor_msgs::PointCloud2> ("/preProcessed/Points", 1);
-        count = 0;
-        des_freq = 5; //Hz
-        ros::Time last_time = ros::Time::now();
-    }
-
-    void rcCallback(const sensor_msgs::PointCloud2ConstPtr& input)
-    {
-        /*pcl::PointCloud<pcl::PointXYZRGB> input_cloud;
-        pcl::fromROSMsg (*input, input_cloud);
-        pcl::PointCloud<pcl::PointXYZRGB>::Ptr input_cloud_ptr (new pcl::PointCloud<pcl::PointXYZRGB>);
-        *input_cloud_ptr = input_cloud;*/
-        
-        ros::Time now = ros::Time::now();
-        cout << now-last_time << endl;
-        /*
-        if ((double) (now - last_time) >= (1/des_freq) - (1/des_freq)*0.15)
-        {
-            pub_Points.publish(input);
-            ros::Time last_time = input->header.stamp;
-        }
-        */
-        count++;
-        cout << count << endl;
-    }
-
-    void run()
-    {
-        ros::Rate r(30);
-        while(ros::ok())
-        {
-            ros::spin(); //should be 30 fps approx
-            //r.sleep();
-            //calc();
-            //loop_rate.sleep();
-        }
-    }
-};
-
-int main (int argc, char **argv)
-{
-    ros::init(argc, argv, "preProccesing_node");
-
-    preProccesing my_node;
-    my_node.run();
+    waitKey(0);                                          // Wait for a keystroke in the window
+    return 0;
 }
