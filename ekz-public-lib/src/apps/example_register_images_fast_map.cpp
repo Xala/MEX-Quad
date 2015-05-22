@@ -13,7 +13,6 @@ int main(int argc, char **argv){
 	string input = argv[1];
 	
 	string bow_path = argv[2];
-
 	Map3D * m = new Map3D();	//Create a standard map object
 	m->setVerbose(true);		//Set the map to give text output
 	

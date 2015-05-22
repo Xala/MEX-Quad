@@ -81,6 +81,7 @@ double OrbFeatureDescriptor::distance(OrbFeatureDescriptor * other_descriptor)
 {
 	//printf("OrbFeatureDescriptor::distance\n");
 	int * disc 	= other_descriptor->descriptor;
+	
 	/*int tmp0 	= descriptor[0] - disc[0];
 	int tmp1 	= descriptor[1] - disc[1];
 	int tmp2 	= descriptor[2] - disc[2];

@@ -1,6 +1,7 @@
 #include "RGBDFrame.h"
 #include "math.h"
 #include "ros/ros.h"
+#include <fstream>
 
 int frame_id_counter = 0;
 RGBDFrame::RGBDFrame(){}
@@ -60,6 +61,9 @@ RGBDFrame::RGBDFrame(FrameInput * fi, FeatureExtractor * extractor, RGBDSegmenta
 
 	gettimeofday(&end, NULL);
 	float time = (end.tv_sec*1000000+end.tv_usec-(start.tv_sec*1000000+start.tv_usec))/1000000.0f;
+	std::ofstream outfile;
+	outfile.open("frameDuration.txt", std::ios_base::app);
+	outfile << time << endl;
 	if(verbose){printf("total time to create frame: %fs\n",time);}
 }
 
