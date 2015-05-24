@@ -2,7 +2,7 @@
 #include <vector>
 
 using namespace std;
-const bool debugg_BowAICK = true;
+const bool debugg_BowAICK = false;
 
 BowAICK::BowAICK()
 {
