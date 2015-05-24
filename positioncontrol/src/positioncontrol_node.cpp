@@ -74,21 +74,27 @@ public:
 	        desired_pose.pose.orientation.y = pri.y();
 	        desired_pose.pose.orientation.z = pri.z();
 	        desired_pose.pose.orientation.w = pri.w();
+	        pub_setpoint.publish(desired_pose);
 
         }
         else if (once)
         {
-	        desired_pose.pose.position.x = 0;
-	        desired_pose.pose.position.y = 0;
-	        desired_pose.pose.position.z = 0.3;
+	        desired_pose.pose.position.x = pose.pose.position.x;
+	        desired_pose.pose.position.y = pose.pose.position.y;
+	        desired_pose.pose.position.z = pose.pose.position.z;
 	        tf::Quaternion q;
 	        q.setRPY(0, 0, 3.1415);
-	        desired_pose.pose.orientation.x = q.x();
-	        desired_pose.pose.orientation.y = q.y();
-	        desired_pose.pose.orientation.z = q.z();
-	        desired_pose.pose.orientation.w = q.w();
+	        desired_pose.pose.orientation.x = pose.pose.orientation.x;//q.x();
+	        desired_pose.pose.orientation.y = pose.pose.orientation.y;//q.y();
+	        desired_pose.pose.orientation.z = pose.pose.orientation.z;//q.z();
+	        desired_pose.pose.orientation.w = pose.pose.orientation.w;//q.w();
+	        pub_setpoint.publish(desired_pose);
 	    }
-        pub_setpoint.publish(desired_pose);
+	else
+	{
+		pub_setpoint.publish(desired_pose);
+	}
+        
     }
 
     void run()
