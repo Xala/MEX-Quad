@@ -56,6 +56,7 @@ private:
 	boost::circular_buffer<geometry_msgs::PoseStamped> lastPoses;
 	double xSpeed, ySpeed, zSpeed;
 	ros::Time lastCloudTime;
+	Matrix4f frameConversionMat;
     public:
     AICKNode()
         : n("~")
@@ -107,6 +108,7 @@ private:
 		pose.pose.orientation.w = 0;*/
 		lastPose = pose;
 		lastPoses = boost::circular_buffer<geometry_msgs::PoseStamped>(3, pose);
+		frameConversionMat << 1,0,0,0, 0,0,1,0, 0,1,0,0, 0,0,0,1;
 		
 
     }
@@ -183,16 +185,18 @@ private:
 					//transformationMatrix = m->estimateCurrentPose(lastTransformationMatrix);
 					transformationMatrix = m->estimateCurrentPose(lastTransformationMatrix);
 					//cout << transformationMatrix.front() << endl << endl;
+					
 					lastTransformationMatrix = transformationMatrix;
+					transformationMatrix.front() = frameConversionMat*transformationMatrix.front();
 					//Convert rotation matrix to quaternion
-					/*tf::Matrix3x3 rotationMatrix;
+					tf::Matrix3x3 rotationMatrix;
     				rotationMatrix.setValue(transformationMatrix.front()(0,0), transformationMatrix.front()(0,1),transformationMatrix.front()(0,2),
     					transformationMatrix.front()(1,0), transformationMatrix.front()(1,1),transformationMatrix.front()(1,2),
                         transformationMatrix.front()(2,0), transformationMatrix.front()(2,1),transformationMatrix.front()(2,2) );
 					
 					tf::Quaternion q;
     				rotationMatrix.getRotation(q);
-					tf::Transform transform;*/
+					//tf::Transform transform;
 					//transform.setOrigin(tf::Vector3(transformationMatrix.front()(0,3), transformationMatrix.front()(1,3), transformationMatrix.front()(2,3)));
 					
 					//publish pose
@@ -201,12 +205,12 @@ private:
 					pose.header.stamp = input->header.stamp;
 					pose.header.frame_id = "local_origin";
 					pose.pose.position.x = transformationMatrix.front()(0,3);
-					pose.pose.position.y = transformationMatrix.front()(2,3);
-					pose.pose.position.z = -transformationMatrix.front()(1,3);
-					pose.pose.orientation.x = lastLocalPose.pose.orientation.x; //q.x(); //
-					pose.pose.orientation.y = lastLocalPose.pose.orientation.y; //q.y(); //
-					pose.pose.orientation.z = lastLocalPose.pose.orientation.z; //q.z(); //
-					pose.pose.orientation.w = lastLocalPose.pose.orientation.w; //q.w(); // 
+					pose.pose.position.y = transformationMatrix.front()(1,3);
+					pose.pose.position.z = transformationMatrix.front()(2,3);
+					pose.pose.orientation.x = q.x(); //
+					pose.pose.orientation.y = q.y(); //
+					pose.pose.orientation.z = q.z(); //
+					pose.pose.orientation.w = q.w(); // 
 					pub_Pose.publish(pose);
 				}
 				//pub_transform.sendTransform(tf::StampedTransform(transform, now, "map", "robot"));
