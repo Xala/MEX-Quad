@@ -82,7 +82,7 @@ target_link_libraries(core_ekzpublic ${catkin_LIBRARIES})
 add_library(TransformationFilter_ekzpublic src/TransformationFilter/TransformationFilter.cpp)
 target_link_libraries(TransformationFilter_ekzpublic core_ekzpublic)
 
-add_library(FrameMatcher_ekzpublic src/FrameMatcher/FrameMatcher.cpp src/FrameMatcher/AICK.cpp src/FrameMatcher/BowAICK.cpp)
+add_library(FrameMatcher_ekzpublic src/FrameMatcher/FrameMatcher.cpp src/FrameMatcher/ICP.cpp src/FrameMatcher/AICK.cpp src/FrameMatcher/BowAICK.cpp)
 #target_link_libraries(FrameMatcher TransformationFilter)
 #target_link_libraries(FrameMatcher graphcutting)
 #target_link_libraries(FrameMatcher g2otypes g2oedges)
@@ -117,6 +117,9 @@ target_link_libraries(example_register_images_fast_map ${OpenCV_LIBRARIES} ${cat
 
 add_executable(example_register_images_fast_key_map src/apps/example_register_images_fast_key_map.cpp)
 target_link_libraries(example_register_images_fast_key_map ${OpenCV_LIBRARIES} ${catkin_LIBRARIES} ${PCL_LIBRARIES} core_ekzpublic map3d_ekzpublic)
+
+add_executable(ICP_fast_map src/apps/ICP_fast_map.cpp)
+target_link_libraries(ICP_fast_map ${OpenCV_LIBRARIES} ${catkin_LIBRARIES} ${PCL_LIBRARIES} core_ekzpublic map3d_ekzpublic)
 
 add_executable(publishPointClouds src/apps/publishPointClouds.cpp)
 target_link_libraries(publishPointClouds ${OpenCV_LIBRARIES} ${catkin_LIBRARIES} ${PCL_LIBRARIES} core_ekzpublic map3d_ekzpublic)

@@ -41,5 +41,5 @@ class FrameMatcher
 
 #include "AICK.h"
 #include "BowAICK.h"
-
+#include "ICP.h"
 #endif

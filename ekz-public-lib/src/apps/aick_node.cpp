@@ -108,7 +108,7 @@ private:
 		pose.pose.orientation.w = 0;*/
 		lastPose = pose;
 		lastPoses = boost::circular_buffer<geometry_msgs::PoseStamped>(3, pose);
-		frameConversionMat << 1,0,0,0, 0,0,1,0, 0,1,0,0, 0,0,0,1;
+		frameConversionMat << 1,0,0,0, 0,0,1,0, 0,-1,0,0, 0,0,0,1;
 		
 
     }
