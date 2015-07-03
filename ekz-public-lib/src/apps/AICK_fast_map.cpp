@@ -8,6 +8,7 @@ vector<double> X;
 vector<double> Y;
 vector<double> Z;
 
+
 int main(int argc, char **argv){
 	lastTransformationMatrix.push_back(Matrix4f::Identity());
     transformationMatrix = lastTransformationMatrix;
@@ -21,8 +22,15 @@ int main(int argc, char **argv){
 	
 	m->loadCalibrationWords(bow_path,"orb", 500);	//set bag of words to orb 500 orb features from bow_path
 	m->setFeatureExtractor(new OrbExtractor());		//Use orb features
+	int max_points = 300;							//Number of keypoints used by matcher
+	int nr_iter = 10;								//Number of iterations the matcher will run
+	float shrinking = 0.7;							//The rate of convergence for the matcher
+	float bow_threshold = 0.15;						//Bag of words threshold to avoid investigating bad matches
+	float distance_threshold = 0.015;				//Distance threshold to discard bad matches using euclidean information.
+	float feature_threshold = 0.15;					//Feature threshold to discard bad matches using feature information.
 	
-	m->setMatcher(new ICP());//Create a new matcher
+	m->setMatcher(new BowAICK(max_points, nr_iter,shrinking,bow_threshold,distance_threshold,feature_threshold));//Create a new matcher
+
 	int k;
 	int l;
 	int n;
@@ -36,7 +44,9 @@ int main(int argc, char **argv){
 	vector< RGBDFrame * > frames;
 	for(int i = k; i <= l; i+= n){
 		printf("----------------------%i-------------------\nadding a new frame\n",i);
-		
+		if (i == 336){
+			i = 339;
+		}
 		//Get paths to image files
 		char rgbbuf[512];
 		char depthbuf[512];
@@ -50,7 +60,7 @@ int main(int argc, char **argv){
 			transformationMatrix = m->estimateCurrentPose(lastTransformationMatrix);
 			gettimeofday(&end, NULL);
 			float time = (end.tv_sec*1000000+end.tv_usec-(start.tv_sec*1000000+start.tv_usec))/1000000.0f;
-			printf("Total ICP cost: %f\n",time);
+			printf("Total AICK cost: %f\n",time);
 			ofstream myfile11;
 			myfile11.open ("totaltimes.txt", std::ios_base::app);  		
 			myfile11 << time << endl;
@@ -65,6 +75,7 @@ int main(int argc, char **argv){
 			X.push_back(x);
 			Y.push_back(y);
 			Z.push_back(z);
+
 		}
 		hej = true;
 	}

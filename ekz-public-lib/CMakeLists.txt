@@ -121,6 +121,9 @@ target_link_libraries(example_register_images_fast_key_map ${OpenCV_LIBRARIES} $
 add_executable(ICP_fast_map src/apps/ICP_fast_map.cpp)
 target_link_libraries(ICP_fast_map ${OpenCV_LIBRARIES} ${catkin_LIBRARIES} ${PCL_LIBRARIES} core_ekzpublic map3d_ekzpublic)
 
+add_executable(AICK_fast_map src/apps/AICK_fast_map.cpp)
+target_link_libraries(AICK_fast_map ${OpenCV_LIBRARIES} ${catkin_LIBRARIES} ${PCL_LIBRARIES} core_ekzpublic map3d_ekzpublic)
+
 add_executable(publishPointClouds src/apps/publishPointClouds.cpp)
 target_link_libraries(publishPointClouds ${OpenCV_LIBRARIES} ${catkin_LIBRARIES} ${PCL_LIBRARIES} core_ekzpublic map3d_ekzpublic)
 

@@ -88,7 +88,7 @@ bool converged(Matrix4f change, float trans_min, float rot_min){
 float BowAICK::getAlpha(int iteration){return 1-pow(shrinking,float(iteration));}
 
 float BowAICK::getAlpha(float avg_d2, int iteration){
-	float a = pow(shrinking,float(iteration));
+	float a = 0.5*pow(shrinking,float(iteration));
 
 	float part = fitness_constant*avg_d2/distance_threshold;
 	if(part > 1){part = 1;}
@@ -388,9 +388,14 @@ Transformation * BowAICK::getTransformation(RGBDFrame * src, RGBDFrame * dst)
 
 	gettimeofday(&end, NULL);
 	float time = (end.tv_sec*1000000+end.tv_usec-(start.tv_sec*1000000+start.tv_usec))/1000000.0f;
+	printf("AICK cost: %f\n",time);
 	if(verbose){printf("BowAICK cost: %f, weight: %f\n",time,transformation->weight);}
 	//transformation->print();
 	//if(transformation->weight > 5){printf("BowAICK cost: %f, weight: %f\n",time,transformation->weight);}
 	transformation->time = time;
+	ofstream myfile1;
+	myfile1.open ("times.txt", std::ios_base::app);  		
+	myfile1 << time << endl;
+	myfile1.close();
 	return transformation;
 }
